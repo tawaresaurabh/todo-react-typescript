@@ -1,17 +1,40 @@
 import React, {useState} from 'react';
 import {Button, Form} from "react-bootstrap";
+import {Dispatch} from "redux";
+import {connect} from "react-redux";
+import {Todo, TodoState} from "../config/interfaces";
+import {addTodo, setError, setShowError} from "../config/actions";
+
 
 
 interface Props {
-    onTodoSubmit: (todoText: string) => void;
+    todoList: Todo[];
+    showError: boolean;
+    addTodo: (todoText: string) => void;
+    setError: (error: string) => void;
+    setShowError: (showError: boolean) => void;
 }
 
 
-const TodoText: React.FC<Props> = ({onTodoSubmit}: Props) => {
+const TodoText = ({todoList, showError ,addTodo, setError, setShowError}: Props) => {
     const [todoText, setTodoText] = useState<string>("");
 
+
+
     const handleAdd = () => {
-        onTodoSubmit(todoText);
+        const lowerCaseTodoList = todoList.map(todo => todo.todoText.toLowerCase());
+        const lowerCaseTodoText = todoText.toLowerCase().trim();
+
+        if (lowerCaseTodoList.includes(lowerCaseTodoText)) {
+            setError(`To do : ${todoText} already present`)
+            setShowError(true);
+        } else {
+            addTodo(todoText.trim())
+            if(showError){
+                setShowError(false);
+                setError("");
+            }
+        }
         setTodoText("");
     }
 
@@ -31,4 +54,22 @@ const TodoText: React.FC<Props> = ({onTodoSubmit}: Props) => {
     );
 }
 
-export default TodoText;
+
+
+function mapStateToProps(state : TodoState) {
+    return{
+        todoList: state.todoList,
+        showError: state.showError,
+    }
+}
+
+
+const mapDispatchToProps = (dispatch : Dispatch) => {
+    return {
+        addTodo: (todoText: string) => dispatch(addTodo(todoText)),
+        setError: (error: string) => dispatch(setError(error)),
+        setShowError: (showError: boolean) => dispatch(setShowError(showError)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoText)

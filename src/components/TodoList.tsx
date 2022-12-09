@@ -1,16 +1,15 @@
 import React from "react";
 import TodoItem from "./TodoItem";
 import {Table} from "react-bootstrap";
-import {Todo} from "../App";
+import {connect} from "react-redux";
+import {Todo, TodoState} from "../config/interfaces";
 
 
 interface Props {
     todoList: Todo[];
-    onTodoRemove: (todoText: string) => void;
-    onTodoUpdate: (todoText: string, state: string) => void;
 }
 
-const TodoList: React.FC<Props> = ({todoList, onTodoUpdate, onTodoRemove}: Props) => {
+const TodoList = ({todoList}: Props) => {
 
     if (todoList.length > 0) {
         return (
@@ -25,7 +24,7 @@ const TodoList: React.FC<Props> = ({todoList, onTodoUpdate, onTodoRemove}: Props
                 <tbody>
 
                 {
-                    todoList.map((value, index) => <TodoItem onTodoRemove={onTodoRemove} onTodoUpdate={onTodoUpdate} todo={value} key={index}/>)
+                    todoList.map((value, index) => <TodoItem todo={value} key={index}/>)
                 }
                 </tbody>
             </Table>
@@ -39,4 +38,12 @@ const TodoList: React.FC<Props> = ({todoList, onTodoUpdate, onTodoRemove}: Props
 
 }
 
-export default TodoList;
+
+function mapStateToProps(state: TodoState) {
+    return {
+        todoList: state.todoList,
+    }
+}
+
+
+export default connect(mapStateToProps, null)(TodoList)

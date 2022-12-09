@@ -1,16 +1,21 @@
 import React from "react";
 import {Alert} from "react-bootstrap";
 
+import {Dispatch} from "redux";
+import {connect} from "react-redux";
+import {TodoState} from "../config/interfaces";
+import {setShowError} from "../config/actions";
+
 interface Props {
     error: string;
-    show: boolean;
-    setShowError: (show: boolean) => void
+    showError: boolean;
+    setShowError: (showError: boolean) => void
 
 }
 
-const TodoError: React.FC<Props> = ({error, show, setShowError}: Props) => {
+const TodoError = ({error, showError, setShowError}: Props) => {
 
-    if (show) {
+    if (showError) {
         return (
             <Alert variant="danger" onClose={() => setShowError(false)} dismissible>
                 <Alert.Heading>{error}</Alert.Heading>
@@ -23,4 +28,19 @@ const TodoError: React.FC<Props> = ({error, show, setShowError}: Props) => {
 
 }
 
-export default TodoError;
+
+
+function mapStateToProps(state : TodoState) {
+    return{
+        error: state.error,
+        showError: state.showError
+    }
+}
+
+const mapDispatchToProps = (dispatch : Dispatch) => {
+    return {
+        setShowError: (showError: boolean) => dispatch(setShowError(showError)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoError)

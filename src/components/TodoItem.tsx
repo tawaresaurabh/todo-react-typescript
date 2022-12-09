@@ -1,30 +1,61 @@
 import React from "react";
 import {Badge, Button, Stack} from "react-bootstrap";
-import {completedState, inProgressState, newState, Todo} from "../App";
+import {completedState, inProgressState, newState} from "../App";
+import {Dispatch} from "redux";
+import {connect} from "react-redux";
+import {Todo, TodoState} from "../config/interfaces";
+import {removeTodo, setError, setShowError, updateTodo} from "../config/actions";
 
 interface Props {
+    todoList: Todo[],
     todo: Todo;
-    onTodoRemove: (todoText: string) => void;
-    onTodoUpdate: (todoText: string, state: string) => void;
+    removeTodo: (todoText: string) => void;
+    updateTodo: (todoText: string, state: string) => void;
+    setError: (error: string) => void;
+    setShowError: (showError: boolean) => void;
 }
 
 
-const TodoItem: React.FC<Props> = ({todo, onTodoRemove, onTodoUpdate}: Props) => {
+const TodoItem = ({todoList, todo, removeTodo, updateTodo, setError, setShowError}: Props) => {
+
+
+
+    const handleTodoRemove = () => {
+        const lowerCaseTodoList = todoList.map(todo => todo.todoText.toLowerCase());
+            const lowerCaseTodoText = todo.todoText.toLowerCase();
+
+            if (lowerCaseTodoList.includes(lowerCaseTodoText)) {
+                removeTodo(todo.todoText);
+            } else {
+                setError("Something went wrong!");
+                setShowError(true);
+            }
+
+    }
+
+    const handleUpdate = (state: string) => {
+            const lowerCaseTodoList = todoList.map(todo => todo.todoText.toLowerCase());
+            const lowerCaseTodoText = todo.todoText.toLowerCase();
+            if (lowerCaseTodoList.includes(lowerCaseTodoText)) {
+                updateTodo(todo.todoText, state);
+            } else {
+                setError("Something went wrong!");
+                setShowError(true);
+            }
+    }
 
     const handleTodoUpdateMarkInProgress = () => {
-        onTodoUpdate(todo.todoText, inProgressState);
+        handleUpdate(inProgressState);
     }
 
     const handleTodoUpdateReopen = () => {
-        onTodoUpdate(todo.todoText, newState);
+        handleUpdate(newState);
     }
 
     const handleTodoUpdateCompleted = () => {
-        onTodoUpdate(todo.todoText, completedState);
+        handleUpdate(completedState);
     }
-    const handleTodoRemove = () => {
-        onTodoRemove(todo.todoText);
-    }
+
 
 
     return (
@@ -49,4 +80,20 @@ const TodoItem: React.FC<Props> = ({todo, onTodoRemove, onTodoUpdate}: Props) =>
 
 }
 
-export default TodoItem;
+
+function mapStateToProps(state: TodoState) {
+    return {
+        todoList: state.todoList,
+    }
+}
+
+const mapDispatchToProps = (dispatch : Dispatch) => {
+    return {
+        removeTodo: (todoText: string) => dispatch(removeTodo(todoText)),
+        updateTodo: (todoText: string, state: string) => dispatch(updateTodo(todoText, state)),
+        setError: (error: string) => dispatch(setError(error)),
+        setShowError: (showError: boolean) => dispatch(setShowError(showError)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoItem)
