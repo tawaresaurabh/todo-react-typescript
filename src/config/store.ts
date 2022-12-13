@@ -1,6 +1,7 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { createLogger } from 'redux-logger';
-import {todoReducer} from './reducer'
+import {configureStore} from '@reduxjs/toolkit'
+import {createLogger} from 'redux-logger';
+import {todoReducer} from "./slice";
+
 
 export default function configureAppStore(preloadedState: any) {
    return  configureStore({
@@ -10,3 +11,5 @@ export default function configureAppStore(preloadedState: any) {
         preloadedState
     })
 }
+
+

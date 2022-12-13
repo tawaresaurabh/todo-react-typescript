@@ -1,23 +1,24 @@
 import React from "react";
 import {Alert} from "react-bootstrap";
+import {actions} from "../config/slice";
+import {useAppDispatch, useAppSelector} from "../config/hooks";
 
-import {Dispatch} from "redux";
-import {connect} from "react-redux";
-import {TodoState} from "../config/interfaces";
-import {setShowError} from "../config/actions";
 
-interface Props {
-    error: string;
-    showError: boolean;
-    setShowError: (showError: boolean) => void
+const TodoError = () => {
 
-}
+    const dispatch = useAppDispatch();
+    const error = useAppSelector(state => state.error);
+    const showError = useAppSelector(state => state.showError);
 
-const TodoError = ({error, showError, setShowError}: Props) => {
+
+    const handleClose = () => {
+        dispatch(actions.setShowError(false));
+        dispatch(actions.setError(""));
+    }
 
     if (showError) {
         return (
-            <Alert variant="danger" onClose={() => setShowError(false)} dismissible>
+            <Alert variant="danger" onClose={handleClose} dismissible>
                 <Alert.Heading>{error}</Alert.Heading>
             </Alert>
         )
@@ -28,19 +29,4 @@ const TodoError = ({error, showError, setShowError}: Props) => {
 
 }
 
-
-
-function mapStateToProps(state : TodoState) {
-    return{
-        error: state.error,
-        showError: state.showError
-    }
-}
-
-const mapDispatchToProps = (dispatch : Dispatch) => {
-    return {
-        setShowError: (showError: boolean) => dispatch(setShowError(showError)),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(TodoError)
+export default TodoError

@@ -1,38 +1,30 @@
 import React, {useState} from 'react';
 import {Button, Form} from "react-bootstrap";
-import {Dispatch} from "redux";
-import {connect} from "react-redux";
-import {Todo, TodoState} from "../config/interfaces";
-import {addTodo, setError, setShowError} from "../config/actions";
+import {actions} from "../config/slice";
+import {useAppDispatch, useAppSelector} from "../config/hooks";
 
 
-
-interface Props {
-    todoList: Todo[];
-    showError: boolean;
-    addTodo: (todoText: string) => void;
-    setError: (error: string) => void;
-    setShowError: (showError: boolean) => void;
-}
-
-
-const TodoText = ({todoList, showError ,addTodo, setError, setShowError}: Props) => {
+const TodoText = () => {
     const [todoText, setTodoText] = useState<string>("");
 
+    const todoList = useAppSelector(state => state.todoList);
+    const showError = useAppSelector(state => state.showError);
 
+
+    const dispatch = useAppDispatch();
 
     const handleAdd = () => {
         const lowerCaseTodoList = todoList.map(todo => todo.todoText.toLowerCase());
         const lowerCaseTodoText = todoText.toLowerCase().trim();
 
         if (lowerCaseTodoList.includes(lowerCaseTodoText)) {
-            setError(`To do : ${todoText} already present`)
-            setShowError(true);
+            dispatch(actions.setError(`To do : ${todoText} already present`));
+            dispatch(actions.setShowError(true))
         } else {
-            addTodo(todoText.trim())
+            dispatch(actions.addTodo(todoText.trim()))
             if(showError){
-                setShowError(false);
-                setError("");
+                dispatch(actions.setShowError(false))
+                dispatch(actions.setError(""))
             }
         }
         setTodoText("");
@@ -56,20 +48,4 @@ const TodoText = ({todoList, showError ,addTodo, setError, setShowError}: Props)
 
 
 
-function mapStateToProps(state : TodoState) {
-    return{
-        todoList: state.todoList,
-        showError: state.showError,
-    }
-}
-
-
-const mapDispatchToProps = (dispatch : Dispatch) => {
-    return {
-        addTodo: (todoText: string) => dispatch(addTodo(todoText)),
-        setError: (error: string) => dispatch(setError(error)),
-        setShowError: (showError: boolean) => dispatch(setShowError(showError)),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(TodoText)
+export default (TodoText)

@@ -6,7 +6,7 @@ import {Container, Stack} from "react-bootstrap";
 import TodoError from "./components/TodoError";
 import {Provider} from "react-redux";
 import configureAppStore from "./config/store";
-import {initialState} from "./config/reducer";
+import {initialState} from "./config/slice";
 
 
 export const newState = "NEW";
@@ -18,6 +18,11 @@ const preloadedState = initialState;
 const clientStore = configureAppStore(preloadedState)
 
 
+
+
+export type RootState = ReturnType<typeof clientStore.getState>
+
+export type AppDispatch = typeof clientStore.dispatch
 
 
 function App() {

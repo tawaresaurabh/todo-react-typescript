@@ -1,34 +1,30 @@
 import React from "react";
 import {Badge, Button, Stack} from "react-bootstrap";
 import {completedState, inProgressState, newState} from "../App";
-import {Dispatch} from "redux";
-import {connect} from "react-redux";
-import {Todo, TodoState} from "../config/interfaces";
-import {removeTodo, setError, setShowError, updateTodo} from "../config/actions";
+import {Todo} from "../config/interfaces";
+import {actions} from "../config/slice";
+import {useAppDispatch, useAppSelector} from "../config/hooks";
+
 
 interface Props {
-    todoList: Todo[],
     todo: Todo;
-    removeTodo: (todoText: string) => void;
-    updateTodo: (todoText: string, state: string) => void;
-    setError: (error: string) => void;
-    setShowError: (showError: boolean) => void;
 }
 
 
-const TodoItem = ({todoList, todo, removeTodo, updateTodo, setError, setShowError}: Props) => {
+const TodoItem = ({todo}: Props) => {
 
-
+    const dispatch = useAppDispatch();
+    const todoList = useAppSelector(state => state.todoList)
 
     const handleTodoRemove = () => {
         const lowerCaseTodoList = todoList.map(todo => todo.todoText.toLowerCase());
             const lowerCaseTodoText = todo.todoText.toLowerCase();
 
             if (lowerCaseTodoList.includes(lowerCaseTodoText)) {
-                removeTodo(todo.todoText);
+                dispatch(actions.removeTodo(todo.todoText));
             } else {
-                setError("Something went wrong!");
-                setShowError(true);
+                dispatch(actions.setError("Something went wrong!"));
+                dispatch(actions.setShowError(true));
             }
 
     }
@@ -37,10 +33,10 @@ const TodoItem = ({todoList, todo, removeTodo, updateTodo, setError, setShowErro
             const lowerCaseTodoList = todoList.map(todo => todo.todoText.toLowerCase());
             const lowerCaseTodoText = todo.todoText.toLowerCase();
             if (lowerCaseTodoList.includes(lowerCaseTodoText)) {
-                updateTodo(todo.todoText, state);
+                dispatch(actions.updateTodo(todo.todoText,state));
             } else {
-                setError("Something went wrong!");
-                setShowError(true);
+                dispatch(actions.setError("Something went wrong!"));
+                dispatch(actions.setShowError(true));
             }
     }
 
@@ -81,19 +77,5 @@ const TodoItem = ({todoList, todo, removeTodo, updateTodo, setError, setShowErro
 }
 
 
-function mapStateToProps(state: TodoState) {
-    return {
-        todoList: state.todoList,
-    }
-}
 
-const mapDispatchToProps = (dispatch : Dispatch) => {
-    return {
-        removeTodo: (todoText: string) => dispatch(removeTodo(todoText)),
-        updateTodo: (todoText: string, state: string) => dispatch(updateTodo(todoText, state)),
-        setError: (error: string) => dispatch(setError(error)),
-        setShowError: (showError: boolean) => dispatch(setShowError(showError)),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(TodoItem)
+export default TodoItem

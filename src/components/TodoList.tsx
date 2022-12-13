@@ -1,15 +1,12 @@
 import React from "react";
 import TodoItem from "./TodoItem";
 import {Table} from "react-bootstrap";
-import {connect} from "react-redux";
-import {Todo, TodoState} from "../config/interfaces";
+import {useAppSelector} from "../config/hooks";
 
 
-interface Props {
-    todoList: Todo[];
-}
+const TodoList = () => {
 
-const TodoList = ({todoList}: Props) => {
+    const todoList = useAppSelector(state => state.todoList);
 
     if (todoList.length > 0) {
         return (
@@ -39,11 +36,4 @@ const TodoList = ({todoList}: Props) => {
 }
 
 
-function mapStateToProps(state: TodoState) {
-    return {
-        todoList: state.todoList,
-    }
-}
-
-
-export default connect(mapStateToProps, null)(TodoList)
+export default (TodoList)
